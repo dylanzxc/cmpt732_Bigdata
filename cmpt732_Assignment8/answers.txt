@@ -1,0 +1,37 @@
+Question 1
+In the execution plan we see the pushedfilter like this:
+ PushedFilters: [*In(orderkey, [151201,986499,28710,193734,810689]), IsNotNull(orderkey), IsNotNull(partkey)] 
+The pushedfilters optimizer helps us to push the filter ie the orderkeys we needed to cassandra table therefore the actually dataframe we used to join and select is actually small, thus the whole program is faster.
+
+I wrote two tpch_orders_df.py programs, one is using spark dataframe methods the other on is writing sql in spark. And it seems that the sql will automatically activate the pushedfilters optimizer but for dataframe method, we have to put the isin filter at the beginning and we have to cast the orderkeys from string list to int so that the spark can match the type to cassandra table otherwise the optimizer won't work.
+
+At the late night the sql method can run in 52sec and the dataframe method one is slower which is about 1.5 min to 2 mins. This is all depend on the cluster statue. At the rush hour the sql one is 2mins and dataframe one is 3.5mins.
+
+Question 2
+CREATE TABLE orders_parts (
+    orderkey int PRIMARY KEY,
+    clerk text,
+    comment text,
+    custkey int,
+    order_priority text,
+    orderdate date,
+    orderstatus text,
+    part_names set<text>,
+    ship_priority int,
+    totalprice decimal
+);
+
+Question 3
+Order #441985 $160494.03: antique thistle light deep orchid, bisque misty firebrick green sky, blush papaya sandy lemon cornsilk, indian maroon white chiffon saddle, steel mint violet seashell lawn
+Order #586119 $21769.33: smoke black burnished steel midnight
+Order #2579142 $236102.74: blanched steel khaki gainsboro navajo, lime burnished lavender mint sandy, olive midnight sandy maroon mint, papaya cornsilk honeydew chartreuse plum, smoke salmon red pale linen, snow seashell tan powder beige
+Order #2816486 $144288.22: forest lime honeydew khaki slate, light blue dark azure salmon, thistle spring purple navajo pale
+Order #2863331 $29684.91: almond cyan grey hot saddle
+
+Our cluster statue is very unstable so the running times I got are inconsistent.
+In the midnight the two tpch_orders_* on tpch2 are all about 1min. But in Friday afternoon the tpch_orders_denorm.py took 3min22sec and tpch_orders_df.py is slightly faster with 3min9s . But 20mins later when I run these two codes again the _demron one took 1min59s and _df took 3min31s.
+
+And I'm questioning that the way we write the denormalizer. I think compare the running time without considering the denormalizer itself's running time doesn't make sense. My denormalizing took 4min30sec. But there is one advantage for denormalizing is that we can easily do some future queries instead of run the spark program everytime. But the way we write the denormalizer makes the denomalizing table hard to updata which will be explained in the next question.
+
+Question 4
+To keep insert/update/delete we have to insert/update/delete in all the related tables ie orders part and lineitem. Then renew the orders_parts table.

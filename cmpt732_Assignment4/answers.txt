@@ -1,0 +1,11 @@
+Question 1
+The .cache() method made the Reddit ETL code runs faster for reddit-3 dataset which is a not very large dataset. The running time for reddit-3 with cache is 14.743s and without cache is 16.084. The reason for this improve is, before we use .cache each time when we generate the output file we need to read the input red once. And in our case we have two output files positive and negative. With cache, we store the input rdd in memory instead and each time we when we need it we can easily access.
+
+Question 2
+When we run Reddit ETL on reddit-4 dataset which is a relatively large dataset, the running time with cache is 15.726 and 15.695 without cache. Here the cache makes the code slower than without. The reason is that cache itself consumes time. For a relatively large dataset the cache operation will take a while. In addition after we cache this relatively large dataset into memory we didn’t use this cached RDD a lot(only twice). Therefore the time for caching itself is higher than read the input RDD twice directly from the dataset.
+
+Question 3
+When the broadcasted object/RDD is not very large the broadcast join will be faster then an actual join. In our Reddit Relative Scores example. The RDD contains average score is very small(five elements only). The normal join needs to copy this small RDD many many times and send it to each partition and shuffle the same key elements into same partition then join. This process is very time-consuming. Instead, with broadcast we can just send/copy/broadcast this small RDD to each partition and do the calculation on each partition then sort the result by key.
+
+Question 4
+If the broadcasted object/RDD is very large then the broadcasting process itself may take longer time than join the elements by key directly. Therefore the using of broadcasted join versus normal join is a tradeoff between “time using by broadcast operation itself” versus “time using by taking and copying data from each partition directly” 

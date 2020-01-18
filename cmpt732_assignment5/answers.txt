@@ -1,0 +1,44 @@
+Question 1
+1)
+"+- *(1) FileScan json [score#1102L,subreddit#1104] Batched: false, Format: JSON, Location: InMemoryFileIndex"
+This shows that the score field and subrredit filed were loaded
+2)
+The average is computed in three steps:
+
+First is the loading we show above 
+Second is the partial_avg step it is similar to the combiner in map-reduce which sum the score and count before aggregate/reduce
+"+- *(1) HashAggregate(keys=[subreddit#1104], functions=[partial_avg(score#1102L)])"
+Third is aggregate step which calculates average, this step is similar to the reduce step in map-reduce
+"*(2) HashAggregate(keys=[subreddit#1104], functions=[avg(score#1102L)])"
+
+Question 2 
+1)
+Mapreduce:1min26s
+Spark DataFrame with Cpython:47s
+Spark RDD with Cpython: 2min20s
+Spark DataFrame with Pypy: 46s
+Spark RDD with Pypy:1min32s
+2)
+Pypy makes both RDD and DataFrame run faster 
+3)
+Because what pypy did is optimizing the running time of python. For RDD we are using method from python so its running time improve a lot. But the methonds for Dataframe are from scala instead of python. So pypy doesn't affect the dataframe's running time a lot.
+
+Question  3
+
+For pagecount-3
+with broadcast:1min25s
+without broadcast:2min2s
+
+For pagecount-1(relatively small)
+with broadcast:19s
+without broadcast:18s
+The improvement of using broadcast for relatively small dataset is not very obvious since broadcasting itself takes time and may take longer than normal join for small dataset.
+
+Question4
+The execution plan with broadcast is shorter than without.
+Broadcast plan has four steps meanwhile without broadcast has seven steps.
+In addition, SortMergeJoin vs BroadcastHashJoin
+
+Question5
+For myself, I prefer the "temp tables + SQL syntax", because the  “DataFrames + Python methods” style is relatively hard to rename using alias or withColumnRenamed, and very easy to produce error for two columns with the same name. But in SQL the same-name problem is easy to solve.
+I think there is no fixed answer for this question. For marketing people they may feel more comfortable with SQL however for developer who is more used to python pandas,  “DataFrames + Python methods” may be a better choice.

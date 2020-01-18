@@ -1,0 +1,63 @@
+Question 1
+With xy-100 which get 100 messages per second my result is oscillating around 61 and -9.5 so my prediction for intercept and slope are 61 and -9.5. 
+
+Question 2
+Yes, with xy-100 the estimate of intercept started from -7.6 and then gradually converged to -9.5. The program is aggregating all of the data from the start of time since I have set the outputMode to 'complete'. 
+
+Question 3
+As the existence of randomSplit method and any other random shuffle method possibly included in the regressor, the  The validation scores for each run is not the same but they are oscillating around 0.5 and 0.6. For the last time I run colour_predict.py:
+Validation score for RGB model: 0.53158
+Validation score for LAB model: 0.7168971699665523
+
+Question 4
+I think there are two factors affect this answer. First is the randomSplit/randomShuffle procedure I mentioned above which will affect the error values a lot. Sometimes the testing error will be slightly higher than training error and sometime vice versa. Another factor is in all the cases I have run, there is only very small difference between training(validation) error and testing error, and both rmse are relatively small and r2 is close to 1. Therefore I think the GBTmodel I trained is relatively a good fit and no overfitting/underfitting condition existed.
+The following data could further explain my answer.
+
+For tmax-1 dataset the training(validation) errors are:
+r-square for GBT model: 0.868563
+root mean square error for GBT model: 4.68306
+
+The testing error are:
+r2 = 0.8583328929128352
+rmse = 4.866165455943824
+
+For tmax-2 dataset the training(validation) errors are:
+r-square for GBT model: 0.910272
+root mean square error for GBT model: 3.83091
+
+The testing error are:
+r2 = 0.9094281941050848
+rmse = 3.8908892768945247
+
+Question 5
+The results I got for several runs are not consistent, sometimes without yesterday data gave better evaluatoin scores sometimes vice versa. 
+
+For my last run:
+The testing score with yesterday's data for tmax-1 dataset:
+features:'latitude','longitude','elevation', 'day_of_year','yesterday_tmax'
+r2 = 0.9209059212410848
+rmse = 3.479076389811654
+The testing score without yesterday's data for tmax-1 dataset:
+features:'latitude','longitude','elevation', 'day_of_year'
+r2 = 0.8836531601405897
+rmse = 4.205213411850755
+
+Question 6:
+Yes I used the GBT regressor. 
+
+Feature_importance for tmax-1 with yesterday data:
+r2 = 0.9161814361316822
+rmse = 3.5814763389752313
+features:'latitude','longitude','elevation', 'day_of_year','yesterday_tmax'
+(5,[0,1,2,3,4],[0.12772781443988074,0.07566052017051354,0.08576208099502196,0.2635599814401735,0.44728960295441034])
+
+Feature_importance for tmax-1 without yesterday data:
+r2 = 0.8752522127364221
+rmse = 4.354388461336902
+features:'latitude','longitude','elevation', 'day_of_year',''
+(4,[0,1,2,3],[0.17045577382500232,0.1655153562362028,0.1990690610271258,0.464959808911669])
+
+From the data we can see that the yesterday_max feature took a more importance in the model and it does kindof imporve the model as we are included with more features this time. 
+But as the importance for yesterday_max is smaller than 0.5 we cannot conclude that with “yesterday's temperature”, it is just predicting “same as yesterday”?
+
+

@@ -1,0 +1,32 @@
+Question 1
+What happened to the HDFS file when one of the nodes it was stored on failed?
+
+After we stop the node-3 in our cluster, on the HDFS NameNode we can see that node 3 is down. In the overview, Number of Under-Replicated Blocks will increase to 31 since some blocks of the bigfile1 is stored on node 3. Then the hdfs will automatically copy the under-replicated blocks to other existing nodes. The Number of Under-Replicated Blocks will reduce to zero then and if we go to the file system we will see that the bigfile1 is replicated on datanode-1 2 and 4 now. The replcation factor has been kept.
+
+Question 2
+How did YARN/MapReduce/Spark behave when one of the compute nodes disappeared?
+
+In the Yarn ResrouceManager, at the beginning of the task we can see that yarn-nodemanager-1 2 3 are included.
+After we stop yarn-nodemanager-3, from the docker stats we can see that yarn-node managere-3 is deleted. And we will have the following warning
+
+2019-11-14 00:55:39,527 WARN cluster.YarnSchedulerBackend$YarnSchedulerEndpoint: Requesting driver to remove executor 6 for reason Container marked as failed: container_1573691897455_0001_01_000009 on host: yarn-nodemanager-3. Exit status: -100. Diagnostics: Container released on a lost node.
+2019-11-14 00:55:39,528 WARN cluster.YarnSchedulerBackend$YarnSchedulerEndpoint: Requesting driver to remove executor 7 for reason Container marked as failed: container_1573691897455_0001_01_000010 on host: yarn-nodemanager-3. Exit status: -100. Diagnostics: Container released on a lost node.
+2019-11-14 00:55:39,532 ERROR cluster.YarnScheduler: Lost executor 7 on yarn-nodemanager-3: Container marked as failed: container_1573691897455_0001_01_000010 on host: yarn-nodemanager-3. Exit status: -100. Diagnostics: Container released on a lost node.
+
+In the application master we can see that for yarn-nodemanager-3 it shows ExecutorLostFailure
+
+ExecutorLostFailure (executor 6 exited unrelated to the running tasks) Reason: Container marked as failed: container_1573691897455_0001_01_000009 on host: yarn-nodemanager-3. Exit status: -100. Diagnostics: Container released on a lost node.
+
+But the task will keep running through nodemanager 1 and 2 on the cluster. The unfinished job of node 3 will be distributed to node 1 and 2. The final result we got is 49999999995000000000.
+
+Question 3
+Were there more things you'd like to try with this cluster, or anything you did try that you think should have been in this assignment?
+
+I tried to run prgram on my cluster. For now I found out there are two ways to do it.
+One is to enter the namenode container using 
+$ docker exec -it namenode bash
+And then we can create and run file in the cluster.
+
+Another way to do this is using 'vagrant-scp' plugin.
+
+It could be very helpful if this part can be included in the assignment instruction.

@@ -1,0 +1,12 @@
+Question 1
+Yes, I have a lot of questions,	But I have asked professors many times so all of them have  been solved. There is one question that confused me the most is the input type for the mapper.As we know The TextInputFormat split the dataset into lines aka strings aka text. So where does the Longwritable key comes from and what does the key stand? I was writing the mapper input as  Mapper<Text, Text, LongPairWritable> but it pops up error. So there must be a LongWritable key there. I'm wondering what does the key stand for. Professor said it should be the text offset which is a data we don’t need.
+
+Question 2
+When I set the reducer=3 I got three outputs instead of one since the data has been processed on three reducers and each reducer generate an output.Theoretically 3 reducers should run faster because it can compute(reduce) data parallelly in three nodes. This is very necessary for large dataset. But in our case when reducer=3 the processing time is 12 seconds. When reducer=1 which is the default set the processing time is 10 seconds. This may due to a relatively small dataset.Three reducers need to process java code three times in total and the data set is not large enough to exert the parallel computing advantage. Therefore the runtime for reducer=3 is actually longer than the runtime when reducer=1.
+
+Question 3
+When reducer equal to 0 what we got is the map output instead of map reduce output. For wordcount example the map output is gonna be (the,1) (the,1) (last,1) .etc. This can be used to debug and check our mapper. For wordcount example when reducer=0 we will get three output files part-m-00000(m represents map), part-m-00001, part-m-00002. The reason for having three output files is there are three inputs in wordcount-1, mapper works on each input file and generate an output file correspondingly.
+
+Question 4
+For my code there isn't a big difference the regular running time with combiner is 11s and when I comment the job.setReducerClass(AverageReducer.class) the running time is also 11s. So i guess since our dataset is small so there isn't a big difference but theoretically the combiner should make it faster for large data set.
+    

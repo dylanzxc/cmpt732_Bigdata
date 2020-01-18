@@ -1,0 +1,16 @@
+Question 1
+The original wordcount-5 data set has eight unbalanced files. Some files are only kilobytes but some are megabytes. Without repartition, our default number of partitions just equal to the amount of files which is eight. In this case some executors will finish the task very fast while others are taking way longer due to the large file size. Therefore the program runs very slow. 
+With repartitions, we can solve the unbalanced file size problem. After the data read by the .textFile on each executor(), the .repartition(80) will shuffle the data to a new rdd with #partitions=80. Therefore each executor will process similar size of data and make the program running faster.
+The reason for me to use 80 repartitions is that we set #executors=8 and in the lecture Professor mentioned that we usually set #partitions=10*#executors
+
+Question 2
+The reason is wordcount-3 data set has 100 relatively equally sized files. The file size is around 15mb which is neither too small nor too large.In this case, it’s not necessary to repartition it. We can just use the default partition which is the number of files. And the .repartition() itself is time-consuming since it has a shuffle process which will make the run time even longer.
+
+Question 3
+There are two ways to makes this program runs faster one is modifying the code aka repartitions the other is modifying the input dataset/folder. We can divide the input to more equally sized parts and eliminate the unbalanced situation.
+
+Question 4  	
+I think the number of partitions should equal to the number of cores or threads, for me I use 100 since out cluster has 96 cores. But there is no big running-time difference for partition above 100 to 10000 when I tested it on the cluster.
+
+Question 5
+For my code the spark run 1000000000 samples in around 4 mins and pypy run this around 40 seconds. So pypy do run the code faster.

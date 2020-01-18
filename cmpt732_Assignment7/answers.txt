@@ -1,0 +1,27 @@
+Question 1
+The original row will be updated/rewritten.
+
+Question 2
+When replication=1 some query will fail because some data are stored in the unhealthy node and cannot be accessed when that node is down.
+
+But when replication=2 all the query will work successfully since every data has been stored to two nodes and we can definitely access one node and do the query even when one node is down.
+
+Question 3
+When Consistency level=one and replication =2, for reading and writing we only need to have the access for one node, therefore we can successfully write/read anytime.
+
+When Consistency level=all and replication =2, for some writing and reading, the query will fail which depends on the hash function. The hash function/algorithm decides the partition of the data. So in some cases the data will be stored in two healthy nodes but in other cases they may be stored in one healthy node and one unhealthy node which will cause query fail when consistency level=all.
+
+When Consistency level=one/all and replication =1, some writing and reading will fail because the only one replication partition could be on healthy or unhealthy node.
+
+In conclusion consistency level refers to replica partitions not node compared with question 2 which we only consider about the nodes we can access.
+
+Question 4
+When consistency=ALL and one node was done WHERE id=1 and WHERE id=4 values returned successfully. As i mentioned in question 3, the hash algorithm decided the replication partition. In our case, one of the replication for id=2,3,5 was decided to be sent to the unhealthy node by the hash function. So when consistency=ALL those data points' replications can not all be accessed and no result returned.
+
+Question 5
+CREATE TABLE nasalogs (host TEXT,id UUID,datetime TIMESTAMP,path TEXT,bytes INT,PRIMARY KEY(host,id));
+I'm using host and uuid as my primary key. To calculate the correlation we need to groupby host name but groupby in cassandra is expensive which asked us to indicate the partion so setting host name as the first component of primary key will help us to do groupby in the future.
+But hostname is not unique so we need another component uuid to make the whole primary key unique.
+
+Question 6
+SELECT SUM(bytes) FROM nasalogs;
